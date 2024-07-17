@@ -8,6 +8,20 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "sourceMap": true,
+    "baseUrl": "./",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@tests/*": ["tests/*"],
+      "@utils/*": ["src/utils/*"],
+      "@config/*": ["src/config/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@interfaces/*": ["src/interfaces/*"],
+      "@models/*": ["src/models/*"],
+      "@repositories/*": ["src/repositories/*"],
+      "@routes/*": ["src/routes/*"],
+      "@services/*": ["src/services/*"],
+      "@middlewares/*": ["src/middlewares/*"]
+    },
     "types": ["node", "jest"]
   },
   "include": ["src", "tests"],
