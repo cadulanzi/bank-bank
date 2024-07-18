@@ -2,7 +2,7 @@ import { TransferService } from '../../../src/services/transferService';
 import { TransferRepository } from '../../../src/repositories/transferRepository';
 import { Transfer } from '../../../src/models/transferModel';
 
-jest.mock('@repositories/transferRepository');
+jest.mock('../../../src/repositories/transferRepository');
 
 describe('TransferService', () => {
   let transferService: TransferService;
@@ -13,7 +13,7 @@ describe('TransferService', () => {
     transferRepoMock.create = jest.fn();
     transferRepoMock.findByAccount = jest.fn();
 
-    transferService = new TransferService();
+    transferService = new TransferService(transferRepoMock);
   });
 
   describe('getTransferHistory', () => {
@@ -23,7 +23,7 @@ describe('TransferService', () => {
         new Transfer('1234', '5678', 100, new Date()),
         new Transfer('5678', '1234', 200, new Date())
       ];
-      transferRepoMock.findByAccount.mockResolvedValueOnce(transfers as never);
+      (transferRepoMock.findByAccount as jest.Mock).mockResolvedValueOnce(transfers);
 
       const result = await transferService.getTransferHistory(accountNumber);
 

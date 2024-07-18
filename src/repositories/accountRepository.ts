@@ -1,21 +1,21 @@
 import { Account } from '@models/accountModel';
 
-const accounts: Account[] = [];
 
 export class AccountRepository {
+  private accounts: Account[] = [];
   create(account: Account) {
-    accounts.push(account);
+    this.accounts.push(account);
     return account;
   }
 
   find(accountNumber: string): Account | undefined {
-    return accounts.find(account => account.accountNumber === accountNumber);
+    return this.accounts.find(account => account.accountNumber === accountNumber);
   }
 
   update(account: Account) {
-    const index = accounts.findIndex(a => a.accountNumber === account.accountNumber);
+    const index = this.accounts.findIndex(a => a.accountNumber === account.accountNumber);
     if (index !== -1) {
-      accounts[index] = account;
+      this.accounts[index] = account;
     }
   }
 }

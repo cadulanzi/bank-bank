@@ -14,7 +14,7 @@ describe('AccountService', () => {
       create: jest.fn(),
       find: jest.fn(),
       update: jest.fn()
-    } as jest.Mocked<AccountRepository>;
+    } as unknown as jest.Mocked<AccountRepository>;
 
     transferServiceMock = {
       transferAccountsHistory: jest.fn(),
@@ -22,22 +22,23 @@ describe('AccountService', () => {
       transferRepo: {} as any
     } as unknown as jest.Mocked<TransferService>;
 
-    accountService = new AccountService();
+    accountService = new AccountService(accountRepoMock, transferServiceMock);
   });
-
   describe('createAccount', () => {
     it('should create a new account if it does not exist', async () => {
-      const accountData = { account_number: '1234', balance: 100 };
+      const accountData = { account_number: '1234', balance: 0 };
       accountRepoMock.find.mockReturnValueOnce(undefined);
 
       await accountService.createAccount(accountData);
 
-      expect(accountRepoMock.create).toHaveBeenCalledWith(expect.objectContaining(accountData));
+      const expectedAccount = new Account(accountData.account_number, accountData.balance);
+      expect(accountRepoMock.create).toHaveBeenCalledWith(expectedAccount);
     });
 
     it('should throw an error if the account already exists', async () => {
-      const accountData = { account_number: '1234' };
-      accountRepoMock.find.mockReturnValueOnce(new Account('1234', 0));
+      const accountData = { account_number: '1234', balance: 100 };
+      const existingAccount = new Account('1234', 0);
+      accountRepoMock.find.mockReturnValueOnce(existingAccount);
 
       await expect(accountService.createAccount(accountData)).rejects.toThrow(HttpError);
     });
@@ -46,7 +47,7 @@ describe('AccountService', () => {
   describe('getBalance', () => {
     it('should return the account balance if the account exists', async () => {
       const accountNumber = '1234';
-      const account = new Account(accountNumber);
+      const account = new Account(accountNumber, 0);
       accountRepoMock.find.mockReturnValueOnce(account);
 
       const result = await accountService.getBalance(accountNumber);
