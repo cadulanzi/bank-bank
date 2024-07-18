@@ -1,8 +1,15 @@
 import { Request, Response } from 'express';
 import { AccountService } from '@services/accountService';
 import { errorHandler } from '@middlewares/errorHandler';
+import { AccountRepository } from '@src/repositories/accountRepository';
+import { TransferService } from '@src/services/transferService';
+import { TransferRepository } from '@src/repositories/transferRepository';
 
-const accountService = new AccountService();
+const accountRepository = new AccountRepository();
+const transferRepository = new TransferRepository();
+const transferService = new TransferService(transferRepository);
+const accountService = new AccountService(accountRepository, transferService);
+
 export class AccountController {
   async createAccount(req: Request, res: Response) {
     try {

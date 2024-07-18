@@ -1,15 +1,19 @@
-import { Transfer } from '@models/transferModel';
-import { TransferRepository } from '@repositories/transferRepository';
-
-const transferRepo = new TransferRepository();
+import { Transfer } from '../models/transferModel';
+import { TransferRepository } from '../repositories/transferRepository';
 
 export class TransferService {
-  async transferAccountsHistory(data: any) {
-    const transfer = new Transfer(data.from, data.to, data.amount, new Date());
-    return transferRepo.create(transfer);
+  private transferRepo: TransferRepository;
+
+  constructor(transferRepo: TransferRepository) {
+    this.transferRepo = transferRepo;
   }
 
-  async getTransferHistory(accountNumber: string) {
-    return transferRepo.findByAccount(accountNumber);
+  async transferAccountsHistory(data: { from: string; to: string; amount: number }) {
+    const transfer = new Transfer(data.from, data.to, data.amount, new Date());
+    return this.transferRepo.create(transfer);
+  }
+
+  async getTransferHistory(accountNumber: string): Promise<Transfer[]> {
+    return this.transferRepo.findByAccount(accountNumber);
   }
 }

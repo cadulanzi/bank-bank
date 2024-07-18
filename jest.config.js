@@ -16,7 +16,7 @@ module.exports = {
     '^@middlewares/(.*)$': '<rootDir>/src/middlewares/$1'
   },
   testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
+    '**/tests/**/*.[jt]s?(x)',
     '**/?(*.)+(spec|test).[tj]s?(x)'
   ],
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],

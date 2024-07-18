@@ -1,14 +1,15 @@
 import { Account } from '@models/accountModel';
 import { AccountRepository } from '@repositories/accountRepository';
 import { TransferService } from '@services/transferService';
+import { TransferRepository } from '@src/repositories/transferRepository';
 import { HttpError } from '@utils/httpError';
 
 export class AccountService {
   private accountRepo: AccountRepository;
   private transferService: TransferService;
-  constructor() {
-    this.accountRepo = new AccountRepository();
-    this.transferService = new TransferService();
+  constructor(accountRepo: AccountRepository, transferService: TransferService) {
+    this.accountRepo = accountRepo;
+    this.transferService = transferService;
   }
 
   async createAccount(data: any) {
