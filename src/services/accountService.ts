@@ -6,8 +6,7 @@ import { HttpError } from '@utils/httpError';
 export class AccountService {
   private accountRepo: AccountRepository;
   private transferService: TransferService;
-  constructor(
-  ) {
+  constructor() {
     this.accountRepo = new AccountRepository();
     this.transferService = new TransferService();
   }

@@ -1,5 +1,5 @@
-import { AccountRepository } from '@repositories/accountRepository';
-import { Account } from '@models/accountModel';
+import { AccountRepository } from '../../../src/repositories/accountRepository';
+import { Account } from '../../../src/models/accountModel';
 
 describe('AccountRepository', () => {
   let accountRepository: AccountRepository;
@@ -35,7 +35,7 @@ describe('AccountRepository', () => {
     it('should return undefined if the account does not exist', () => {
       const result = accountRepository.find('1234');
 
-      expect(result).toBeUndefined();
+      expect(result).toEqual(undefined);
     });
   });
 
