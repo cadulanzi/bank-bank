@@ -91,10 +91,3 @@ npm test
 - `src/utils` - Contains utility functions and classes
 - `tests` - Contains the test files
 
-## Contributing
-
-Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).

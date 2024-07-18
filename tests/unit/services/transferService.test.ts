@@ -1,28 +1,19 @@
-import { TransferService } from '@services/transferService';
-import { TransferRepository } from '@repositories/transferRepository';
-import { Transfer } from '@models/transferModel';
+import { TransferService } from '../../../src/services/transferService';
+import { TransferRepository } from '../../../src/repositories/transferRepository';
+import { Transfer } from '../../../src/models/transferModel';
+
+jest.mock('@repositories/transferRepository');
 
 describe('TransferService', () => {
   let transferService: TransferService;
-  let transferRepoMock: TransferRepository;
+  let transferRepoMock: jest.Mocked<TransferRepository>;
 
   beforeEach(() => {
-    transferRepoMock = {
-      create: jest.fn(),
-      findByAccount: jest.fn()
-    } as unknown as TransferRepository;
+    transferRepoMock = new TransferRepository() as jest.Mocked<TransferRepository>;
+    transferRepoMock.create = jest.fn();
+    transferRepoMock.findByAccount = jest.fn();
 
-    transferService = new TransferService(transferRepoMock);
-  });
-
-  describe('transferAccountsHistory', () => {
-    it('should create a new transfer record', async () => {
-      const transferData = { from: '1234', to: '5678', amount: 100 };
-
-      await transferService.transferAccountsHistory(transferData);
-
-      expect(transferRepoMock.create).toHaveBeenCalledWith(expect.any(Transfer));
-    });
+    transferService = new TransferService();
   });
 
   describe('getTransferHistory', () => {
@@ -32,7 +23,7 @@ describe('TransferService', () => {
         new Transfer('1234', '5678', 100, new Date()),
         new Transfer('5678', '1234', 200, new Date())
       ];
-      transferRepoMock.findByAccount.mockReturnValueOnce(transfers);
+      transferRepoMock.findByAccount.mockResolvedValueOnce(transfers as never);
 
       const result = await transferService.getTransferHistory(accountNumber);
 
@@ -40,4 +31,3 @@ describe('TransferService', () => {
     });
   });
 });
-

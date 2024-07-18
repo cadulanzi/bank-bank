@@ -2,9 +2,8 @@ import { Request, Response } from 'express';
 import { AccountService } from '@services/accountService';
 import { errorHandler } from '@middlewares/errorHandler';
 
-const accountService: AccountService = new AccountService();
+const accountService = new AccountService();
 export class AccountController {
-
   async createAccount(req: Request, res: Response) {
     try {
       const account = await accountService.createAccount(req.body);

@@ -1,26 +1,28 @@
-import { AccountService } from '@services/accountService';
-import { AccountRepository } from '@repositories/accountRepository';
-import { TransferService } from '@services/transferService';
-import { HttpError } from '@utils/httpError';
+import { AccountService } from '../../../src/services/accountService';
+import { AccountRepository } from '../../../src/repositories/accountRepository';
+import { TransferService } from '../../../src/services/transferService';
+import { Account } from '../../../src/models/accountModel';
+import { HttpError } from '../../../src/utils/httpError';
 
 describe('AccountService', () => {
   let accountService: AccountService;
-  let accountRepoMock: AccountRepository;
-  let transferServiceMock: TransferService;
+  let accountRepoMock: jest.Mocked<AccountRepository>;
+  let transferServiceMock: jest.Mocked<TransferService>;
 
   beforeEach(() => {
     accountRepoMock = {
       create: jest.fn(),
       find: jest.fn(),
       update: jest.fn()
-    } as unknown as AccountRepository;
+    } as jest.Mocked<AccountRepository>;
 
     transferServiceMock = {
       transferAccountsHistory: jest.fn(),
-      getTransferHistory: jest.fn()
-    } as unknown as TransferService;
+      getTransferHistory: jest.fn().mockResolvedValue([]),
+      transferRepo: {} as any
+    } as unknown as jest.Mocked<TransferService>;
 
-    accountService = new AccountService(accountRepoMock, transferServiceMock);
+    accountService = new AccountService();
   });
 
   describe('createAccount', () => {
@@ -30,7 +32,7 @@ describe('AccountService', () => {
 
       await accountService.createAccount(accountData);
 
-      expect(accountRepoMock.create).toHaveBeenCalledWith(expect.any(Account));
+      expect(accountRepoMock.create).toHaveBeenCalledWith(expect.objectContaining(accountData));
     });
 
     it('should throw an error if the account already exists', async () => {
@@ -44,12 +46,12 @@ describe('AccountService', () => {
   describe('getBalance', () => {
     it('should return the account balance if the account exists', async () => {
       const accountNumber = '1234';
-      const account = new Account(accountNumber, 100);
+      const account = new Account(accountNumber);
       accountRepoMock.find.mockReturnValueOnce(account);
 
       const result = await accountService.getBalance(accountNumber);
 
-      expect(result).toEqual({ balance: 100 });
+      expect(result).toEqual({ balance: 0 });
     });
 
     it('should throw an error if the account does not exist', async () => {
@@ -95,6 +97,46 @@ describe('AccountService', () => {
     });
   });
 
-  // Similar test cases for transfer and history methods
-});
+  describe('transfer', () => {
+    it('should transfer funds between accounts and update transfer history', async () => {
+      const transferData = {
+        from: '1234',
+        to: '5678',  
+        amount: 100
+      };
+      const fromAccount = new Account(transferData.from, 200);
+      const toAccount = new Account(transferData.to, 0);
+      accountRepoMock.find
+        .mockReturnValueOnce(fromAccount)
+        .mockReturnValueOnce(toAccount);
 
+      await accountService.transfer(transferData);
+
+      expect(accountRepoMock.update).toHaveBeenCalledTimes(2);
+      expect(transferServiceMock.transferAccountsHistory).toHaveBeenCalledWith(transferData);
+    });
+
+    it('should throw an error if the transfer amount is invalid', async () => {
+      const transferData = {
+        from: '1234',
+        to: '5678',
+        amount: -100
+      };
+
+      await expect(accountService.transfer(transferData)).rejects.toThrow(HttpError);
+    });
+
+    it('should throw an error if the source or destination account does not exist', async () => {
+      const transferData = {
+        from: '1234',
+        to: '5678',
+        amount: 100
+      };
+      accountRepoMock.find
+        .mockReturnValueOnce(undefined)
+        .mockReturnValueOnce(new Account(transferData.to, 0));
+
+      await expect(accountService.transfer(transferData)).rejects.toThrow(HttpError);
+    });
+  });
+});

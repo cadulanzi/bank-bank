@@ -1,5 +1,6 @@
-import { TransferRepository } from '@repositories/transferRepository';
-import { Transfer } from '@models/transferModel';
+import 'jest-extended';  // Importação para utilizar jest-extended
+import { TransferRepository } from '../../../src/repositories/transferRepository';
+import { Transfer } from '../../../src/models/transferModel';
 
 describe('TransferRepository', () => {
   let transferRepository: TransferRepository;
@@ -33,7 +34,9 @@ describe('TransferRepository', () => {
 
       const result = transferRepository.findByAccount('1234');
 
-      expect(result).toEqual([transfer1, transfer2, transfer3]);
+      // Usando comparação padrão do Jest para verificar se os arrays são iguais
+      expect(result).toEqual(expect.arrayContaining([transfer1, transfer3]));
+      expect(result).not.toEqual(expect.arrayContaining([transfer2]));
     });
 
     it('should return an empty array if no transfers involve the specified account', () => {
@@ -46,4 +49,3 @@ describe('TransferRepository', () => {
     });
   });
 });
-
